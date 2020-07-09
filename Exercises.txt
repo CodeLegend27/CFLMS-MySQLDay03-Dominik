@@ -1,0 +1,246 @@
+
+ 1. Report:
+
+ How many rows do we have in each table in the employees database?
+
+SELECT COUNT(*)
+FROM departments
+
+Result 9
+
+SELECT COUNT(*)
+FROM dept_emp
+
+Result 331603
+
+SELECT COUNT(*)
+FROM dept_manager
+
+Result 24
+
+SELECT COUNT(*)
+FROM employees
+
+Result 300024
+
+SELECT COUNT(*)
+FROM salaries
+
+Result 2537024
+
+
+SELECT COUNT(*)
+FROM titles
+
+Result 443308
+
+
+
+2. Report:
+
+How many employees with the first name "Mark" do we have in our company?
+
+SELECT * FROM `employees` 
+
+WHERE first_name LIKE "%Mark%"
+
+Result 690
+
+exact Mark Result = 230
+
+3. Report:
+
+How many employees with the first name "Eric" and the last name beginning with "A" do we have in our company?
+
+SELECT * FROM `employees` 
+
+WHERE first_name LIKE "Eric" AND last_name REGEXP "^a"
+
+Result 13
+
+ 4. Report:
+
+ How many employees do we have that are working for us since 1985 and who are they?
+
+
+
+ 5. Report:
+
+ How many employees got hired from 1990 until 1997 and who are they?
+ 
+SELECT * FROM `employees` WHERE hire_date >= "1985-01-01"
+
+Result 299471 
+they are humans
+
+
+
+ 6. Report:
+
+ How many employees have salaries higher than EUR 70 000,00 and who are they? 
+
+SELECT  first_name, last_name, salary, to_date
+FROM employees e
+LEFT JOIN salaries s
+ ON e.emp_no = s.emp_no
+ AND salary >= 70000
+ 
+ they are humans
+ 
+ Duplicates because of date --->>> eliminate  with this correct ??
+ 
+ SELECT e.first_name, e.last_name, s1.salary, s1.to_date
+FROM employees e
+LEFT JOIN salaries s1 ON e.emp_no = s1.emp_no AND s1.salary >= 70000
+INNER JOIN
+(
+    SELECT emp_no, MAX(to_date) AS max_to_date
+    FROM salaries
+    GROUP BY emp_no
+) s2
+    ON s1.emp_no = s2.emp_no AND s1.to_date = s2.max_to_date;
+	
+
+ 7. Report:
+
+ How many employees do we have in the Research Department, who are working for us since 1992 and who are they?
+
+SELECT DISTINCT first_name, last_name, dept_name, hire_date
+from employees
+join departments
+WHERE
+hire_date >= "1992-01-01" AND dept_name = "Research"
+
+87048
+They are Humans
+
+
+ 8. Report:
+
+ How many employees do we have in the Finance Department, who are working for us since 1985 until now and who have salaries higher than EUR 75 000,00 - who are they?
+ 
+ SELECT DISTINCT first_name, last_name, dept_name, hire_date, salary
+from employees
+join departments
+join salaries
+WHERE
+hire_date >= "1992-01-01" AND dept_name = "Research" AND salary >= 75000
+
+// Could not proof it since even after 10 mins no resulsts showed up, tried it several times
+
+
+
+ 9. Report:
+
+ We need a table with employees, who are working for us at this moment: first and last name, date of birth, gender, hire_date, title and salary.
+
+SELECT
+	first_name, 
+	last_name, 
+	birth_date, 
+	gender, 
+	hire_date, 
+	title,
+    salary
+FROM employees e
+JOIN titles t
+on t.emp_no = e.emp_no
+join salaries s on s.emp_no = e.emp_no
+
+// Duplicates because of  date , tried with DISTINCT but loading time exploded again
+
+
+ 10. Report:
+
+ We need a table with managers, who are working for us at this moment: first and last name, date of birth, gender, hire_date, title, department name and salary.
+
+SELECT
+	first_name, 
+	last_name, 
+	birth_date, 
+	gender, 
+	hire_date, 
+	title,
+    salary
+FROM employees e
+JOIN titles t
+on t.emp_no = e.emp_no
+join salaries s on s.emp_no = e.emp_no
+JOIN dept_manager dm
+on dm.emp_no = e.emp_no
+
+WHERE e.emp_no = dm.emp_no
+
+// Empty Result
+
+
+ Bonus query:
+
+  Create a query which will join all tables and show all data from all tables.
+  
+SELECT * from employees
+
+
+ Next step:
+
+ Now you should create at least 5 queries on your own, try to use data from more than 2 tables.
+ 
+ 
+ 1) 
+ --		SELECT ALL EMPLOYES IN SPECIFIC APPARTMENT
+ 
+ SELECT *
+FROM employees e
+JOIN dept_emp d
+on e.emp_no = d.emp_no
+WHERE dept_no IN ("d005")
+
+2) 
+--SELECT EMPLOYES WITH SALARY BETWEEND 70l - 80k
+
+
+
+SELECT first_name, last_name, salary
+FROM employees e 
+JOIN salaries s
+on e.emp_no = s.emp_no
+WHERE salary BETWEEN 70000 AND 80000
+ 
+ //STILL Shows the date duplicates because of the yearly salaray raise, cant fix it
+ 3)
+ --SHOW ALL EMPLOYES WITH A OR P in the first name
+
+ SELECT * FROM `employees` WHERE first_name REGEXP "[ap]"
+4)
+--Checking the Database if every employee got a gender with null operator
+
+SELECT * FROM `employees` WHERE gender IS NULL
+
+5)
+-- Select employes sorted by their first name descending with a output limit of 100 entrys
+
+SELECT DISTINCT *
+FROM employees
+ORDER BY first_name DESC
+LIMIT 100
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
